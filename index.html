@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Income Splitter</title>
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --dark: #111827;
+      --soft: #f9fafb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+      background: var(--card);
+      border-radius: 24px;
+      padding: 26px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin: 16px 0 8px;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 15px;
+      font-size: 17px;
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+      background: white;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #111827;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .row {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      font-size: 15px;
+    }
+
+    .row span:first-child {
+      color: #374151;
+    }
+
+    .value {
+      font-weight: 700;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .highlight {
+      background: var(--dark);
+      color: white;
+      border-color: var(--dark);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .highlight span:first-child {
+      color: white;
+    }
+
+    .note-box {
+      margin-top: 22px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 12px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 7px;
+      line-height: 1.45;
+    }
+
+    .split-summary {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 420px) {
+      body {
+        padding: 14px;
+      }
+
+      .container {
+        padding: 22px;
+        border-radius: 22px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .row {
+        font-size: 14px;
+      }
+
+      .highlight {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Income Splitter</h1>
+    <p class="subtitle">
+      Enter your income, choose the income type, and this calculates your suggested split for tax, tithe, car maintenance, emergency fund, and usable money.
+    </p>
+
+    <label for="incomeType">Income Type</label>
+    <select id="incomeType" onchange="calculate()">
+      <option value="abn">ABN Contractor</option>
+      <option value="iconnect">iConnect Salary</option>
+      <option value="taxfree">Tax-Free / Reimbursement</option>
+    </select>
+
+    <label for="income">Income Amount</label>
+    <input type="number" id="income" placeholder="Enter amount, e.g. 199.50" min="0" step="0.01" oninput="calculate()" />
+
+    <label for="reimbursement">Reimbursement-style payment?</label>
+    <select id="reimbursement" onchange="calculate()">
+      <option value="no">No</option>
+      <option value="yes">Yes, skip tithe</option>
+    </select>
+    <div class="small">
+      Use “Yes” for things like glasses replacement, petrol reimbursement, refunded costs, or money that is just making you whole again.
+    </div>
+
+    <section class="grid">
+      <div class="row">
+        <span>Church Tithe</span>
+        <span class="value" id="tithe">$0</span>
+      </div>
+
+      <div class="row">
+        <span>ATO Tax Saver</span>
+        <span class="value" id="tax">$0</span>
+      </div>
+
+      <div class="row">
+        <span>Car Maintenance</span>
+        <span class="value" id="car">$0</span>
+      </div>
+
+      <div class="row">
+        <span>Emergency Fund</span>
+        <span class="value" id="emergency">$0</span>
+      </div>
+
+      <div class="row">
+        <span>Total to Up Savers</span>
+        <span class="value" id="totalUp">$0</span>
+      </div>
+
+      <div class="row highlight">
+        <span>Remaining Usable Money</span>
+        <span class="value" id="remaining">$0</span>
+      </div>
+    </section>
+
+    <div class="split-summary" id="logicSummary">
+      Choose an income type and enter an amount.
+    </div>
+
+    <div class="note-box">
+      <span class="pill">Current logic</span><br>
+      • iConnect Salary → 5% tax buffer, 5% car, 5% emergency.<br>
+      • ABN Contractor → 25% tax under $800, 28% tax from $800–$1,499, 30% tax from $1,500+.<br>
+      • ABN emergency → $10 under $300, $40 from $300–$799, $75 from $800+.<br>
+      • Tax-Free / Reimbursement → 0% tax, 5% car, 5% emergency.<br>
+      • Tithe → 10% rounded up to nearest dollar, unless reimbursement is selected.
+    </div>
+  </main>
+
+  <script>
+    function money(value) {
+      return "$" + Number(value || 0).toLocaleString("en-AU", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+
+    function roundUp(value) {
+      return Math.ceil(Number(value || 0));
+    }
+
+    function calculate() {
+      const incomeType = document.getElementById("incomeType").value;
+      const reimbursement = document.getElementById("reimbursement").value;
+      const income = parseFloat(document.getElementById("income").value) || 0;
+
+      let taxRate = 0;
+      let tax = 0;
+      let tithe = 0;
+      let car = 0;
+      let emergency = 0;
+      let logicText = "";
+
+      if (income <= 0) {
+        document.getElementById("tithe").innerText = "$0";
+        document.getElementById("tax").innerText = "$0";
+        document.getElementById("car").innerText = "$0";
+        document.getElementById("emergency").innerText = "$0";
+        document.getElementById("totalUp").innerText = "$0";
+        document.getElementById("remaining").innerText = "$0";
+        document.getElementById("logicSummary").innerText = "Enter an amount to calculate your split.";
+        return;
+      }
+
+      // Tithe: 10% rounded up, unless reimbursement-style selected.
+      tithe = reimbursement === "yes" ? 0 : roundUp(income * 0.10);
+
+      if (incomeType === "iconnect") {
+        taxRate = 0.05;
+        tax = roundUp(income * taxRate);
+        car = roundUp(income * 0.05);
+        emergency = roundUp(income * 0.05);
+        logicText = "iConnect Salary selected: small 5% extra tax buffer because PAYG tax is normally already withheld.";
+      }
+
+      if (incomeType === "abn") {
+        if (income >= 1500) {
+          taxRate = 0.30;
+        } else if (income >= 800) {
+          taxRate = 0.28;
+        } else {
+          taxRate = 0.25;
+        }
+
+        tax = roundUp(income * taxRate);
+        car = roundUp(income * 0.05);
+
+        if (income < 300) {
+          emergency = 10;
+        } else if (income < 800) {
+          emergency = 40;
+        } else {
+          emergency = 75;
+        }
+
+        logicText = "ABN Contractor selected: higher tax saver because tax is not automatically withheld.";
+      }
+
+      if (incomeType === "taxfree") {
+        taxRate = 0;
+        tax = 0;
+        car = roundUp(income * 0.05);
+        emergency = roundUp(income * 0.05);
+        logicText = "Tax-Free / Reimbursement selected: no ATO tax saver, but 5% car and 5% emergency still build stability.";
+      }
+
+      const totalUp = tax + car + emergency;
+      const remaining = income - tithe - totalUp;
+
+      document.getElementById("tithe").innerText = money(tithe);
+      document.getElementById("tax").innerText = money(tax) + " (" + Math.round(taxRate * 100) + "%)";
+      document.getElementById("car").innerText = money(car);
+      document.getElementById("emergency").innerText = money(emergency);
+      document.getElementById("totalUp").innerText = money(totalUp);
+      document.getElementById("remaining").innerText = money(remaining);
+      document.getElementById("logicSummary").innerText = logicText;
+    }
+
+    calculate();
+  </script>
+</body>
+</html>
