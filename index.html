@@ -50,14 +50,14 @@ summary{cursor:pointer;font-weight:700}
 
 <label>Income Amount</label>
 <input
-type="text"
+type="tel"
 inputmode="numeric"
 id="income"
 value=""
 placeholder="Enter amount"
+autocomplete="off"
 oninput="calc()">
 
-  
 <div id="taxfreeOptions" class="hidden">
 <label>Tax-Free Tax Buffer</label>
 <select id="tfTax" onchange="calc()">
@@ -134,21 +134,21 @@ if(window.tfCar && localStorage.tfCar) tfCar.value=localStorage.tfCar;
 }
 
 function calc(){
-let income=parseFloat(
-document.getElementById('income').value.replace(/,/g,'')
-)||0;
-  
-  let typeVal=type.value;
+let income=parseFloat(document.getElementById('income').value)||0;
+let typeVal=type.value;
 
 if(income<=0){
 message.innerText='Enter an income amount to begin.';
 remainingHero.innerText="$0";
 savers.innerText="$0";
+document.getElementById('saverBreakdown').innerHTML='Enter an income amount';
 advanced.classList.add('hidden');
+document.getElementById('taxfreeOptions').classList.add('hidden');
 return;
 }
 
 advanced.classList.toggle('hidden',typeVal==='reimb');
+document.getElementById('taxfreeOptions').classList.toggle('hidden', typeVal !== 'taxfree');
 document.getElementById('allocationCards').style.display=(typeVal==='reimb')?'none':'block';
 
 let titheAmt=0,taxAmt=0,carAmt=0,em=0,travelAmt=0,fergAmt=0,taxPercent='';
@@ -223,14 +223,12 @@ else if(income<800){emNote.innerText='Growing buffer';}
 else if(income<1500){emNote.innerText='Strong income period';}
 else{emNote.innerText='Excellent savings period';}
 travelNote.innerText=travel.value==='5'?'✓ Recommended. Steady travel savings for regular travellers.':'';
-document.getElementById('saverBreakdown').innerHTML=`
-💰 Tax Buffer ${money(taxAmt)}<br>
-🚗 Car Fund ${money(carAmt)}<br>
-🛟 Emergency Fund ${money(em)}<br>
-✈️ Travel Fund ${money(travelAmt)}<br><br>
-⛪ Church Tithe ${money(titheAmt)}<br>
-🏠 Ferguson ${money(fergAmt)}
-`; 
+if(typeVal==='reimb'){
+document.getElementById('saverBreakdown').innerHTML='No savings allocations applied';
+}else{
+const activeBuckets=[taxAmt, carAmt, em, travelAmt].filter(v => v > 0).length;
+document.getElementById('saverBreakdown').innerHTML=`${activeBuckets} active saver buckets`;
+}
 
 fergLine.style.display=(typeVal==='reimb' || fergAmt===0)?'none':'block';
 }
