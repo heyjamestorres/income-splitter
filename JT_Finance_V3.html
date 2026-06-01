@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JT Finance V3</title>
+<style>
+:root{
+--bg:#f5f5f7;--card:#fff;--text:#111827;--muted:#6b7280;
+--green:#e8f7ee;--blue:#eaf2ff;--purple:#f3ebff;
+}
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;color:var(--text);padding:20px;max-width:900px;margin:auto}
+.card{background:var(--card);border-radius:28px;padding:20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.hero{text-align:center;padding:30px}
+.hero h1{margin:0;font-size:14px;color:var(--muted)}
+.hero .amount{font-size:48px;font-weight:800;margin-top:10px}
+label{display:block;margin:10px 0 6px;font-weight:600}
+input,select{width:100%;padding:14px;border-radius:16px;border:1px solid #ddd}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.mini{border-radius:22px;padding:16px}
+.green{background:var(--green)}
+.blue{background:var(--blue)}
+.purple{background:var(--purple)}
+.note{font-size:12px;color:var(--muted);margin-top:6px}
+.hidden{display:none}
+.small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="card hero">
+<h1>JT Finance<br><span class="small">by James Torres</span></h1>
+<div>Remaining Usable Money</div>
+<div class="amount" id="remainingHero">$0</div>
+</div>
+
+<div class="card">
+<label>Income Type</label>
+<select id="type" onchange="calc()">
+<option value="abn">ABN Contractor</option>
+<option value="iconnect">iConnect Salary</option>
+<option value="taxfree">Tax-Free Income</option>
+<option value="reimb">True Reimbursement</option>
+</select>
+
+<label>Income Amount</label>
+<input type="number" id="income" value="0" oninput="calc()">
+
+<div id="travelWrap">
+<label>Travel Fund</label>
+<select id="travel" onchange="savePrefs();calc()">
+<option value="0">0%</option>
+<option value="5">5% (Recommended)</option>
+<option value="10">10%</option>
+<option value="15">15%</option>
+</select>
+<div class="note" id="travelNote"></div>
+</div>
+
+<div id="fergWrap">
+<label>Ferguson Residence</label>
+<select id="ferg" onchange="savePrefs();calc()">
+<option value="0">0%</option>
+<option value="2.5">2.5%</option>
+<option value="5">5% (Recommended)</option>
+<option value="7.5">7.5%</option>
+<option value="10">10%</option>
+</select>
+<div class="note" id="fergNote"></div>
+</div>
+
+<div id="taxfreeOptions" class="hidden">
+<label>Tax-Free Tax Buffer</label>
+<select id="tfTax" onchange="calc()">
+<option value="0">0%</option><option value="2.5">2.5%</option><option value="5">5%</option><option value="10">10%</option>
+</select>
+
+<label>Tax-Free Car Fund</label>
+<select id="tfCar" onchange="calc()">
+<option value="0">0%</option><option value="5">5%</option>
+</select>
+</div>
+</div>
+
+<div class="card">
+<h3>Income Explanation</h3>
+<div id="message"></div>
+</div>
+
+<div class="card">
+<h3>Total to Up Savers</h3>
+<h2 id="savers">$0</h2>
+</div>
+
+<div class="grid">
+<div class="mini green"><strong>Tax Buffer</strong><br><span id="tax">$0</span></div>
+<div class="mini blue"><strong>Car Fund</strong><br><span id="car">$0</span></div>
+<div class="mini green"><strong>Emergency Fund</strong><br><span id="emergency">$0</span></div>
+<div class="mini blue" id="travelCard"><strong>Travel Fund</strong><br><span id="travelAmt">$0</span></div>
+</div>
+
+<div class="card">
+<h3>Money Leaving You</h3>
+<div>Church Tithe: <strong id="tithe">$0</strong></div>
+<div id="fergLine">Ferguson Residence: <strong id="fergAmt">$0</strong></div>
+</div>
+
+<div class="card">
+<h3>Savings Breakdown</h3>
+<p>Money Leaving You<br>• Church Tithe<br>• Ferguson Residence</p>
+<p>Money Staying With You<br>• Tax Buffer<br>• Car Fund<br>• Emergency Fund<br>• Travel Fund</p>
+</div>
+
+<script>
+function money(v){return "$"+Math.round(v).toLocaleString();}
+
+function savePrefs(){
+localStorage.setItem("travel",document.getElementById("travel").value);
+localStorage.setItem("ferg",document.getElementById("ferg").value);
+}
+
+function loadPrefs(){
+if(localStorage.getItem("travel")) document.getElementById("travel").value=localStorage.getItem("travel");
+if(localStorage.getItem("ferg")) document.getElementById("ferg").value=localStorage.getItem("ferg");
+}
+
+function calc(){
+let income=parseFloat(document.getElementById('income').value)||0;
+let type=document.getElementById('type').value;
+let tithe=0,tax=0,car=0,em=0,travel=0,ferg=0;
+
+document.getElementById('taxfreeOptions').classList.toggle('hidden',type!=='taxfree');
+
+if(type==='abn'){
+document.getElementById('message').innerText='Income from NDIS support work, freelancing and contractor activities where tax is generally not withheld.';
+tithe=income*.10; tax=income*(income>=1500?.30:income>=800?.28:.25); car=income*.05; em=income<300?10:income<800?40:75;
+}
+if(type==='iconnect'){
+document.getElementById('message').innerText='Employment income where PAYG tax is normally withheld.';
+tithe=income*.10; tax=income*.05; car=income*.05; em=income*.05;
+}
+if(type==='taxfree'){
+document.getElementById('message').innerText='Clinical trials, gifts and other generally non-taxable payments.';
+tithe=income*.10; tax=income*(document.getElementById('tfTax').value/100); car=income*(document.getElementById('tfCar').value/100); em=income*.05;
+}
+if(type==='reimb'){
+document.getElementById('message').innerText='This payment has been treated as a genuine reimbursement. No savings allocations have been applied.';
+document.getElementById('travelWrap').style.display='none';
+document.getElementById('fergWrap').style.display='none';
+document.getElementById('travelCard').style.display='none';
+document.getElementById('fergLine').style.display='none';
+} else {
+document.getElementById('travelWrap').style.display='block';
+document.getElementById('fergWrap').style.display='block';
+document.getElementById('travelCard').style.display='block';
+document.getElementById('fergLine').style.display=(document.getElementById('ferg').value==="0"?"none":"block");
+travel=income*(document.getElementById('travel').value/100);
+ferg=income*(document.getElementById('ferg').value/100);
+}
+
+let savers=tax+car+em+travel;
+let remaining=income-tithe-tax-car-em-travel-ferg;
+
+document.getElementById('remainingHero').innerText=money(remaining);
+document.getElementById('savers').innerText=money(savers);
+document.getElementById('tithe').innerText=money(tithe);
+document.getElementById('tax').innerText=money(tax);
+document.getElementById('car').innerText=money(car);
+document.getElementById('emergency').innerText=money(em);
+document.getElementById('travelAmt').innerText=money(travel);
+document.getElementById('fergAmt').innerText=money(ferg);
+
+document.getElementById('travelNote').innerText=document.getElementById('travel').value=="5"?"✓ Recommended. Steady travel savings for regular travellers.":"";
+document.getElementById('fergNote').innerText=document.getElementById('ferg').value=="5"?"Balanced contribution. Recommended.":"";
+}
+loadPrefs();
+calc();
+</script>
+</body>
+</html>
