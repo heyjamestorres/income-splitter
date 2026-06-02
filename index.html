@@ -181,17 +181,24 @@ if(typeVal!=='reimb'){
 travelAmt=income*(parseFloat(travel.value)/100);
 
 let fp=0;
+
 if(ferg.value==='auto'){
-if(income<300) fp=0;
-else if(income<800) fp=2.5;
-else if(income<1500) fp=5;
-else fp=7.5;
-fergNote.innerText='Auto based on income: 0% • 2.5% • 5% • 7.5%';
+
+    if(income < 500) fp = 0;
+    else if(income < 1500) fp = 2.5;
+    else if(income < 3000) fp = 5;
+    else fp = 7.5;
+
+    fergNote.innerText =
+    'Auto: <$500 = 0% • $500–1499 = 2.5% • $1500–2999 = 5% • $3000+ = 7.5%';
+
 }else{
-fp=parseFloat(ferg.value);
+
+    fp = parseFloat(ferg.value);
+
 }
-fergAmt=income*fp/100;
-}
+
+fergAmt = income * fp / 100;
 
 
 if(income < 50){
