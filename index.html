@@ -111,8 +111,26 @@ oninput="calc()">
 <div class="mini accent-blue"><strong>🚗 Car Fund</strong><br><span id="car">$0</span><div class="small" id="carPct"></div></div>
 <div class="mini accent-green"><strong>🛟 Emergency Fund</strong><br><span id="emergency">$0</span><div class="small" id="emNote"></div></div>
 <div class="mini accent-blue"><strong>✈️ Travel Fund</strong><br><span id="travelAmt">$0</span><div class="small" id="travelPct"></div></div>
-<div class="mini" style="border-left:5px solid #f59e0b" id="fergLine"><strong>🏠 Ferguson</strong><br><span id="fergAmt">$0</span><div class="small">Family Contribution<br><span style='font-size:12px;opacity:.75'>not part of Up Savers</span></div></div>
-</div>
+<div class="mini" style="border-left:5px solid #f59e0b" id="fergLine">
+
+    <strong>🏠 Ferguson</strong><br>
+
+    <span id="fergAmt">$0</span>
+
+    <div class="small" id="fergPct"></div>
+
+    <div class="small">
+
+        Family Contribution<br>
+
+        <span style="font-size:12px;opacity:.75">
+
+            not part of Up Savers
+
+        </span>
+
+    </div>
+
 </div>
 
 <script>
@@ -221,7 +239,8 @@ document.getElementById('car').innerText=money(carAmt);
 emergency.innerText=money(em);
 travelAmt?document.getElementById('travelAmt').innerText=money(travelAmt):document.getElementById('travelAmt').innerText='$0';
 document.getElementById('fergAmt').innerText=money(fergAmt);
-
+document.getElementById('fergPct').innerText = fp + '%';
+    
 taxPct.innerText=taxPercent;
 carPct.innerText=typeVal==='taxfree'?tfCar.value+'%':'5%';
 travelPct.innerText=typeVal!=='reimb'?travel.value+'%':'';
