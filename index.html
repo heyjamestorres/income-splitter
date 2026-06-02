@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
-<title>JT Finance V4.1.2 Stable</title>
+<title>JT Finance V4.2 Stable</title>
 <style>
 :root{
 --bg:#f5f5f7;--card:#fff;--text:#111827;--muted:#6b7280;
@@ -133,6 +133,10 @@ oninput="calc()">
 
 </div>
 
+</div>
+</div>
+</div>
+
 <script>
 function money(v){return "$"+Math.round(v).toLocaleString();}
 
@@ -152,7 +156,7 @@ if(window.tfCar && localStorage.tfCar) tfCar.value=localStorage.tfCar;
 }
 
 function calc(){
-let income=parseFloat(document.getElementById('income').value)||0;
+let income=parseFloat(document.getElementById('income').value.replace(/,/g,''))||0;
 let typeVal=type.value;
 
 if(income<=0){
