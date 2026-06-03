@@ -179,18 +179,18 @@ let titheAmt=0,taxAmt=0,carAmt=0,em=0,travelAmt=0,fergAmt=0,taxPercent='';
 
 if(typeVal==='abn'){
 message.innerText='NDIS contractor income where tax is usually not withheld.';
-titheAmt=income*.1;
+titheAmt=Math.ceil(income*.1);
 let rate=income>=1500?30:income>=800?28:25;
 taxAmt=income*rate/100; taxPercent=rate+'%';
 carAmt=income*.05; em=income<300?10:income<800?40:75;
 }
 if(typeVal==='iconnect'){
 message.innerText='Employment income where PAYG tax is normally withheld.';
-titheAmt=income*.1; taxAmt=income*.05; carAmt=income*.05; em=income*.05; taxPercent='5%';
+titheAmt=Math.ceil(income*.1); taxAmt=income*.05; carAmt=income*.05; em=income*.05; taxPercent='5%';
 }
 if(typeVal==='taxfree'){
 message.innerText='Clinical trials, gifts and other generally non-taxable payments.';
-titheAmt=income*.1;
+titheAmt=Math.ceil(income*.1);
 taxAmt=income*(parseFloat(tfTax.value)/100);
 if(typeVal==='taxfree' && (!tfCar.value || parseFloat(tfCar.value)===0)) tfCar.value='5';
 carAmt=income*(parseFloat(tfCar.value)/100);
