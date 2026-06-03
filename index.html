@@ -138,8 +138,10 @@ oninput="calc()">
 </div>
 
 <script>
-function money(v){return "$"+Math.round(v).toLocaleString();}
-
+function money(v){
+    return "$"+v.toFixed(2);
+}
+    
 function savePrefs(){
 localStorage.setItem('type',type.value);
 localStorage.setItem('travel',travel.value);
@@ -231,8 +233,8 @@ travelAmt=0;
 fergAmt=0;
 }
 
-let totalSavers=taxAmt+carAmt+em+travelAmt;
-
+let totalSavers=Math.ceil(taxAmt+carAmt+em+travelAmt);
+    
 let remaining=income-titheAmt-taxAmt-carAmt-em-travelAmt-fergAmt;
 
 remainingHero.innerText=money(remaining);
